@@ -20,7 +20,6 @@ namespace Business.Concrete
         }
         public IResult Add(BusType busType)
         {
-            _bustype;
             _busTypeDal.Add(busType);
             return new SuccessResult(Messages.AddedSuccess);
 
