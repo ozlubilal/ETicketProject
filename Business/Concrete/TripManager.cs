@@ -1,5 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Contans;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -21,6 +23,7 @@ namespace Business.Concrete
            _tripDal = tripDal;
            _routeService= routeService;
         }
+        [ValidationAspect(typeof(TripValidator))]
         public IResult Add(Trip trip)
         {
             _tripDal.Add(trip);
@@ -30,7 +33,7 @@ namespace Business.Concrete
         public IResult Delete(Trip trip)
         {
             _tripDal.Delete(trip);
-            return new SuccessResult(Messages.AddedSuccess);
+            return new SuccessResult(Messages.DeletedSuccess);
         }
 
         public IDataResult<List<Trip>> GetAll()
@@ -69,11 +72,11 @@ namespace Business.Concrete
             return new SuccessDataResult<List<TripDto>>(tripDtoList);
            
         }
-
+        [ValidationAspect(typeof(TripValidator))]
         public IResult Update(Trip trip)
         {
             _tripDal.Update(trip);
-            return new SuccessResult(Messages.AddedSuccess);
+            return new SuccessResult(Messages.UpdatedSuccess);
         }
 
         public IDataResult<List<TripDto>> GetAllTripDto()

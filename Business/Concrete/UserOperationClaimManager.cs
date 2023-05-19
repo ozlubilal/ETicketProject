@@ -1,6 +1,9 @@
 ﻿using Business.Abstract;
 using Business.Contans;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.Entities.Concrete;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using System;
@@ -19,16 +22,22 @@ namespace Business.Concrete
             _userOperationClaimDal = userOperationClaimDal;
 
         }
+        [ValidationAspect(typeof(UserOperationClaimValidator))]
         public IResult Add(UserOperationClaim userOperationClaim)
         {
+            var result = BussinessRules.Run(CheckIfUserIdExists(userOperationClaim));
+            if (result != null)
+            {
+                return result;
+            }
             _userOperationClaimDal.Add(userOperationClaim);
-            return new SuccessResult(Messages.UserOperationClaimAdded);
+            return new SuccessResult(Messages.AddedSuccess);
         }
 
         public IResult Delete(UserOperationClaim userOperationClaim)
         {
             _userOperationClaimDal.Delete(userOperationClaim);
-            return new SuccessResult(Messages.UserOperationClaimAdd);
+            return new SuccessResult(Messages.DeletedSuccess);
         }
 
         public IDataResult<List<UserOperationClaim>> GetAll()
@@ -45,11 +54,25 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<UserOperationClaim>(_userOperationClaimDal.GetList(c => c.UserId == id).FirstOrDefault());
         }
-
+        [ValidationAspect(typeof(UserOperationClaimValidator))]
         public IResult Update(UserOperationClaim userOperationClaim)
         {
+            var result = BussinessRules.Run(CheckIfUserIdExists(userOperationClaim));
+            if (result != null)
+            {
+                return result;
+            }
             _userOperationClaimDal.Update(userOperationClaim);
-            return new SuccessResult(Messages.UserOperationClaimUpdated);
+            return new SuccessResult(Messages.UpdatedSuccess);
+        }
+        private IResult CheckIfUserIdExists(UserOperationClaim userOperationClaim)
+        {
+            var result = _userOperationClaimDal.GetList(u => u.UserId == userOperationClaim.UserId).Any();
+            if (result)
+            {
+                return new ErrorResult(Messages.UserIdAlreadyExists);
+            }
+            return new SuccessResult();
         }
     }
 

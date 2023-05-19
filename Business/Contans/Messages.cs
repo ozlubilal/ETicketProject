@@ -9,20 +9,39 @@ namespace Business.Contans
 {
     public class Messages
     {
-        public static string AddedSuccess { get; internal set; }
-        public static string DeletedSuccess { get; internal set; }
-        public static string UpdatedSuccess { get; internal set; }
-        public static string AccesTokenCreated { get; internal set; }
-        public static string UserNotFound { get; internal set; }
-        public static string UserSuccesfulLogin { get; internal set; }
-        public static User PasswordError { get; internal set; }
-        public static string UserRegistered { get; internal set; }
-        public static string UserAlreadyExists { get; internal set; }
-        public static string OperationClaimAdded { get; internal set; }
-        public static string OperationClaimDeleted { get; internal set; }
-        public static string OperationClaimUpdated { get; internal set; }
-        public static string UserOperationClaimAdded { get; internal set; }
-        public static string UserOperationClaimAdd { get; internal set; }
-        public static string UserOperationClaimUpdated { get; internal set; }
+        public static string AddedSuccess="Ekleme işlemi başarılı";
+
+        public static string DeletedSuccess = "Silme işlemi başarılı";
+
+        public static string UpdatedSuccess = "Güncelleme işlemi başarılı";
+
+        public static string AccesTokenCreated = "Token bağlantı işlemi başarılı";
+
+        public static string UserNotFound = "Kullanıcı bulunamadı";
+
+        public static string UserSuccesfulLogin = "Giriş İşlemi başarılı";
+
+        public static string PasswordError = "Hatalı parola";
+
+        public static string UserRegistered = "Kayıt işlemi başarılı";
+
+        public static string UserAlreadyExists = "Bu email adresinde kullanıcı zaten kayıtlı";
+
+        public static string BusTypeNameAlreadyExists = "Bu isimde otobüs türü vardır";
+
+        public static string GenderNameAlreadyExist = "Bu isimde cinsiyet vardır";
+
+        public static string CityNameAlreadyExists = "Bu isimde şehir vardır";
+
+        public static string OperationClaimNameNameAlreadyExist = "Bu isimde yetki adı vardır";
+
+        public static string TownNameAlreadyExists = "Bu isimde ilçe adı vardır";
+
+        public static string TripStateAlreadyExists = "Bu isimde  adı vardır";
+
+        public static string UserIdAlreadyExists = "Bu kullanıcı tanımlı yetkilendirme vardır";
+
+        internal static string customerAlreadyExistsByIdenityNumber = "Bu Tc kimlik numarasına ait müşteri  vardır";
+        internal static string userUpdated = "Kullanıcı güncellendi";
     }
 }

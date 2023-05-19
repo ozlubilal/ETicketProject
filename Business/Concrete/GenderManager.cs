@@ -1,5 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Contans;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -18,6 +20,7 @@ namespace Business.Concrete
         {
             _genderDal = genderDal;
         }
+        [ValidationAspect(typeof(GenderValidator))]
         public IResult Add(Gender gender)
         {
             _genderDal.Add(gender);
@@ -44,6 +47,15 @@ namespace Business.Concrete
         {
             _genderDal.Update(gender);
             return new SuccessResult(Messages.UpdatedSuccess);
+        }
+        private IResult CheckIfGenderNameExists(Gender gender)
+        {
+            var result = _genderDal.GetList(g => g.GenderName == gender.GenderName).Any();
+            if (result)
+            {
+                return new ErrorResult(Messages.GenderNameAlreadyExist);
+            }
+            return new SuccessResult();
         }
     }
 }

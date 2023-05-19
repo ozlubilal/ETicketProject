@@ -1,5 +1,8 @@
 ﻿using Business.Abstract;
 using Business.Contans;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -18,11 +21,16 @@ namespace Business.Concrete
         {
             _busTypeDal = busTypeDal;
         }
+        [ValidationAspect(typeof(BusTypeValidator))]
         public IResult Add(BusType busType)
         {
+            IResult result = BussinessRules.Run(CheckIfBusTypeNameExists(busType.BusTypeName));
+            if (result!=null)
+            {
+                return result;
+            }
             _busTypeDal.Add(busType);
             return new SuccessResult(Messages.AddedSuccess);
-
         }
 
         public IResult Delete(BusType busType)
@@ -40,11 +48,27 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<BusType>(_busTypeDal.Get(b => b.Id == id));
         }
-
+        [ValidationAspect(typeof(BusTypeValidator))]
         public IResult Update(BusType busType)
         {
+            IResult result = BussinessRules.Run(CheckIfBusTypeNameExists(busType.BusTypeName));
+            if (result != null)
+            {
+                return result;
+            }
             _busTypeDal.Update(busType);
             return new SuccessResult(Messages.UpdatedSuccess);
+        }
+        private IResult CheckIfBusTypeNameExists(string busTypeName)
+        {
+
+            var result = _busTypeDal.GetList(p => p.BusTypeName == busTypeName).Any();
+            if (result)
+            {
+                return new ErrorResult(Messages.BusTypeNameAlreadyExists);
+            }
+
+            return new SuccessResult();
         }
     }
 }

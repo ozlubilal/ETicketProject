@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Business.Contans;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -20,6 +21,11 @@ namespace Business.Concrete
         }
         public IResult Add(City city)
         {
+            IResult result = BussinessRules.Run(CheckIfBusTypeNameExists(city.CityName));
+            if (result != null)
+            {
+                return result;
+            }
             _cityDal.Add(city);
             return new SuccessResult(Messages.AddedSuccess);
         }
@@ -43,8 +49,24 @@ namespace Business.Concrete
 
         public IResult Update(City city)
         {
+            IResult result = BussinessRules.Run(CheckIfBusTypeNameExists(city.CityName));
+            if (result != null)
+            {
+                return result;
+            }
             _cityDal.Update(city);
             return new SuccessResult(Messages.UpdatedSuccess);
+        }
+        private IResult CheckIfBusTypeNameExists(string cityName)
+        {
+
+            var result = _cityDal.GetList(p => p.CityName == cityName).Any();
+            if (result)
+            {
+                return new ErrorResult(Messages.CityNameAlreadyExists);
+            }
+
+            return new SuccessResult();
         }
     }
 }

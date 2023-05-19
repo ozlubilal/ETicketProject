@@ -71,8 +71,11 @@ namespace Business.Concrete
             {
                 OperationClaimId = userForRegisterDto.OperationClaimId,
                 UserId=user.Id,
-
             };
+            if (userForRegisterDto.OperationClaimId==null || userForRegisterDto.OperationClaimId == 0)
+            {
+                userOperationClaim.OperationClaimId = 2;
+            }
             _userOperationClaimService.Add(userOperationClaim);           
             return new SuccessDataResult<User>(user, Messages.UserRegistered);
         }
@@ -97,7 +100,7 @@ namespace Business.Concrete
             var userOperationClaim =_userOperationClaimService.GetByUserId(userForUpdateDto.UserId).Data;
             userOperationClaim.OperationClaimId = userForUpdateDto.OperationClaimId;
             _userOperationClaimService.Update(userOperationClaim);
-            return new SuccessDataResult<User>(user,"selama");
+            return new SuccessDataResult<User>(user,Messages.userUpdated);
 
             
             //var customer = new Customer

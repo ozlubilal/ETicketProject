@@ -2,19 +2,35 @@
 using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
+using Entities.Concrete;
+using Business.Concrete;
+using DataAccess.Concrete.EntityFramework;
 
 class Hello
 {
 	static void Main()
 	{
-		var person = new Person
+		Person person = new Person
 		{
-			FirstName = "Gunnar",
-			LastName = "Peipman",
-			SSN = "-i"
+			FirstName =null,
+			LastName = "zlu",
+			SSN = "1",
 		};
 
-        	ObjectDump.Write(person);
+		BusType busType = new BusType
+		{
+			BusTypeName = " ",
+			NumberOfSeats=23,
+		};
+		BusTypeManager busTypeManager = new BusTypeManager(new EfBusTypeDal());
+		Console.Write(busType.Id);
+
+  
+		
+
+//		Console.Write((person.GetType()).GetProperties().GetValue(person).ToString());
+
+			//ObjectDump.Write(person);
         
 	}
 }
@@ -31,26 +47,32 @@ public static class ObjectDump
 {
 	public static void Write(object obj)
 	{
-		
-
-		Console.Write("Hash: ");
-		Console.WriteLine(obj.GetHashCode());
-		Console.Write("Type: ");
-		Console.WriteLine(obj.GetType());
-
-		var props = GetProperties(obj);
-
-		if (props.Count > 0)
+		if (obj != null)
 		{
-			Console.WriteLine("-------------------------");
-		}
 
-		foreach (var prop in props)
-		{
-			Console.Write(prop.Key);
-			Console.Write(": ");
-			Console.WriteLine(prop.Value);
+			//Console.Write("Hash: ");
+			//Console.WriteLine(obj.GetHashCode());
+			//Console.Write("Type: ");
+			//Console.WriteLine(obj.GetType());
+
+			var props = GetProperties(obj);
+
+			if (props.Count > 0)
+			{
+				Console.WriteLine("-------------------------");
+			}
+
+			foreach (var prop in props)
+			{
+				Console.Write(prop.Key);
+				Console.Write(": ");
+				Console.WriteLine(prop.Value);
+			}
 		}
+        else
+        {
+			Console.WriteLine("null obje");
+        }
 	}
 
 	private static Dictionary<string, string> GetProperties(object obj)
@@ -60,11 +82,21 @@ public static class ObjectDump
 			return props;
 
 		var type = obj.GetType();
+
 		foreach (var prop in type.GetProperties())
 		{
-			var val = prop.GetValue(obj, new object[] { });
-			var valStr = val == null ? "" : val.ToString();
-			props.Add(prop.Name, valStr);
+			if (prop == null)
+			{
+				Console.WriteLine("prop null");
+			}
+			else
+			{
+				var val = prop.GetValue(obj, new object[] { });
+				var valStr = val == null ? "" : val.ToString();
+				props.Add(prop.Name, valStr);
+			}
+			
+           
 		}
 
 		return props;

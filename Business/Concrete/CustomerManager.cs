@@ -1,6 +1,9 @@
 ﻿using Business.Abstract;
 using Business.Contans;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.Entities.Concrete;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -24,8 +27,15 @@ namespace Business.Concrete
             _userService = userService;
             _authService = authService;
         }
+        [ValidationAspect(typeof(CustomerValidator))]
         public IResult Add(CustomerAddDto customerAddDto)
         {
+            var result = BussinessRules.Run(CheckIfIdentityNumberExists(customerAddDto));
+            if (result != null)
+            {
+                return result;
+            }
+
             UserForRegisterDto userForRegisterDto = new UserForRegisterDto
             {
                 Email = customerAddDto.Email,
@@ -85,6 +95,13 @@ namespace Business.Concrete
 
         public IResult Update(CustomerAddDto customerAddDto)
         {
+            var result = BussinessRules.Run(CheckIfIdentityNumberExists(customerAddDto));
+            if (result != null)
+            {
+                return result;
+            }
+
+
             Customer customer = _customerDal.Get(r => r.Id == customerAddDto.Id);
             User user = _userService.GetById(customer.UserId).Data;
             user.FirstName = customerAddDto.FirstName;
@@ -103,5 +120,14 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<CustomerDto>(_customerDal.GetAllCustomerDto(r => r.Id == id).FirstOrDefault());
         }
+        private IResult CheckIfIdentityNumberExists(CustomerAddDto customerAddDto)
+        {
+            var result = _customerDal.GetList(c => c.IdentityNumber == customerAddDto.IdentityNumber).Any();
+            if (result)
+            {
+                return new ErrorResult(Messages.customerAlreadyExistsByIdenityNumber);
+            }
+            return new SuccessResult();
+        }       
     }
 }

@@ -1,5 +1,8 @@
 ﻿using Business.Abstract;
 using Business.Contans;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -19,8 +22,14 @@ namespace Business.Concrete
         {
             _townDal = townDal;
         }
+        [ValidationAspect(typeof(TownValidator))]
         public IResult Add(Town town)
         {
+            IResult result = BussinessRules.Run(CheckIfTownNameExists(town));
+            if (result != null)
+            {
+                return result;
+            }
             _townDal.Add(town);
             return new SuccessResult(Messages.AddedSuccess);
         }
@@ -53,9 +62,14 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<List<TownDto>>(_townDal.GetAllTownDto(t => t.TownName == townName));
         }
-
+        [ValidationAspect(typeof(TownValidator))]
         public IResult Update(Town town)
         {
+            IResult result = BussinessRules.Run(CheckIfTownNameExists(town));
+            if (result != null)
+            {
+                return result;
+            }
             _townDal.Update(town);
             return new SuccessResult(Messages.UpdatedSuccess);
         }
@@ -63,6 +77,15 @@ namespace Business.Concrete
         public IDataResult<List<Town>> GetByCityId(int cityId)
         {
             return new SuccessDataResult<List<Town>>(_townDal.GetList(t => t.CityId == cityId));
+        }
+        private Result CheckIfTownNameExists(Town town)
+        {
+            var result = _townDal.GetList(t => t.TownName == town.TownName).Any();
+            if (result)
+            {
+                return new ErrorResult(Messages.TownNameAlreadyExists);
+            }
+            return new SuccessResult();
         }
     }
 }

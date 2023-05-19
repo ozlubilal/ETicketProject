@@ -1,5 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Contans;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -19,7 +21,7 @@ namespace Business.Concrete
         {
             _routeDal = routeDal;
         }
-
+        [ValidationAspect(typeof(RouteValidator))]
         public IResult Add(Route route)
         {
             _routeDal.Add(route);
@@ -29,7 +31,7 @@ namespace Business.Concrete
         public IResult Delete(Route route)
         {
             _routeDal.Delete(route);
-            return new SuccessResult(Messages.UpdatedSuccess);
+            return new SuccessResult(Messages.DeletedSuccess);
         }
 
         public IDataResult<List<Route>> GetAll()
@@ -44,8 +46,8 @@ namespace Business.Concrete
         public IDataResult<Route> GetById(int id)
         {
             return new SuccessDataResult<Route>(_routeDal.Get(r => r.Id == id));
-        }       
-
+        }
+        [ValidationAspect(typeof(RouteValidator))]
         public IResult Update(Route route)
         {
             _routeDal.Update(route);
@@ -56,5 +58,6 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<List<RouteDto>>(_routeDal.GetAllTripDto());
         }
+        
     }
 }

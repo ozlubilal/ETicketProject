@@ -1,5 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Contans;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -19,6 +21,7 @@ namespace Business.Concrete
         {
             _ticketDal = ticketDal;
         }
+        [ValidationAspect(typeof(TicketValidator))]
         public IResult Add(Ticket ticket)
         {
             _ticketDal.Add(ticket);
@@ -59,7 +62,7 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<List<TicketDto>>(_ticketDal.GetAllTripDto(t=>t.IdentityNumber==identityNumber).ToList());
         }
-
+        [ValidationAspect(typeof(TicketValidator))]
         public IResult Update(Ticket ticket)
         {
             _ticketDal.Update(ticket);

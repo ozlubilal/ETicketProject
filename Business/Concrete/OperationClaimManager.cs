@@ -1,6 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Contans;
 using Core.Entities.Concrete;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using System;
@@ -20,14 +21,19 @@ namespace Business.Concrete
         }
         public IResult Add(OperationClaim operationClaim)
         {
+            IResult result = BussinessRules.Run(CheckIfOperationClaimNameExists(operationClaim));
+            if (result != null)
+            {
+                return result;
+            }
             _operationClaimDal.Add(operationClaim);
-            return new SuccessResult(Messages.OperationClaimAdded);
+            return new SuccessResult(Messages.AddedSuccess);
         }
 
         public IResult Delete(OperationClaim operationClaim)
         {
             _operationClaimDal.Delete(operationClaim);
-            return new SuccessResult(Messages.OperationClaimDeleted);
+            return new SuccessResult(Messages.DeletedSuccess);
         }
 
         public IDataResult<List<OperationClaim>> GetAll()
@@ -47,8 +53,22 @@ namespace Business.Concrete
         }
         public IResult Update(OperationClaim operationClaim)
         {
+            IResult result = BussinessRules.Run(CheckIfOperationClaimNameExists(operationClaim));
+            if (result != null)
+            {
+                return result;
+            }
             _operationClaimDal.Update(operationClaim);
-            return new SuccessResult(Messages.OperationClaimUpdated);
+            return new SuccessResult(Messages.UpdatedSuccess);
+        }
+        private IResult CheckIfOperationClaimNameExists(OperationClaim operationClaim)
+        {
+            var result = _operationClaimDal.GetList(o => o.Name == operationClaim.Name).Any();
+            if (result)
+            {
+                return new ErrorResult(Messages.OperationClaimNameNameAlreadyExist);
+            }           
+            return new SuccessResult();
         }
     }
 }
